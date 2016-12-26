@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>多人聊天室</title>
+    <link rel="stylesheet" href="../CSS/index.css">
+</head>
+<body>
+<div class="box">
+    <div class="left">
+        <!--在线人数-->
+        <div class="num">
+            <p>当前在线人数:<span>0</span>人</p>
+        </div>
+        <!--内容显示窗口-->
+        <div class="window">
+            <ul>
+
+            </ul>
+        </div>
+        <!--输入-->
+        <div class="input">
+            <form style="height: 100%;width: 100%;position: relative" action="">
+                <textarea style="height: 100%;width: 80%;resize: none;border: none" name="" id="textarea" cols="30" rows="10"></textarea>
+                <div class="btn">发送</div>
+            </form>
+        </div>
+    </div>
+
+    <!--成员列表-->
+    <div class="right">
+        <ul>
+
+        </ul>
+    </div>
+</div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    //成员列表
+    var userlist=document.querySelector(".right ul");
+    //人数
+    var number=document.querySelector(".num p span");
+    //点击发送
+    var btn=document.querySelector(".btn");
+    var textarea=document.querySelector("#textarea");
+    var mainul=document.querySelector(".window ul");
+    var socket = io('http://10.80.16.136:3002');
+
+    btn.onclick=function(){
+        var textValue=textarea.value;
+        socket.emit('message', {value:textValue});
+    }
+
+    socket.on('news', function (data) {
+        number.innerHTML=data.number;
+        userlist.innerHTML="";
+        for(var i=0;i<data.userArr.length;i++){
+            var li = document.createElement("li");
+            li.innerHTML=data.userArr[i];
+            userlist.appendChild(li);
+        }
+    });
+
+    socket.on('fasong',function(data){
+        console.log(data)
+            var li = document.createElement("li");
+            li.innerHTML=data.user+":"+"<span>"+data.data.value+"</span>";
+            mainul.appendChild(li);
+    })
+</script>
+</html>
